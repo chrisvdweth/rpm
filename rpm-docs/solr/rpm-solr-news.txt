@@ -1,0 +1,134 @@
+
+
+
+
+tar xzf solr-7.3.0.tgz solr-7.3.0/bin/install_solr_service.sh --strip-components=2
+
+
+sudo ./install_solr_service.sh solr-7.3.0.tgz
+
+
+
+curl "http://localhost:8983/solr/admin/cores?action=CREATE&name=rpm&instanceDir=rpm"
+
+// Clean-up
+bin/solr delete -c rpm
+
+sudo su - solr -c "/opt/solr/bin/solr create -c rpm"
+
+
+// Delete all documents
+curl -X POST -H 'Content-Type: application/json' 'http://localhost:8983/solr/rpm_news/update?commit=true' -d '{ "delete": {"query":"*:*"} }'
+
+
+curl -X POST -H 'Content-Type: application/json' 'http://localhost:8983/solr/rpm_news/update/json/docs' --data-binary '{ "id": "123", "title": "This is a example headline.", "url": "http://www.straitstimes.com/singapore/63-year-old-man-arrested-for-stealing-underwear-in-series-of-cases-at-bukit-batok", "published_at": "2016-10-13T08:35:47.510Z", "content": "Let us pretend the following text is meaningful content for a news article. It certainly is not, but how cares?" }'
+
+
+
+curl 'http://localhost:8983/solr/rpm_news/query' -d '{ "query" : "title:bla" }'
+
+curl 'http://localhost:8983/solr/rpm_news/query' -d '{ "query" : "*" }'
+
+curl 'http://localhost:8983/solr/select/?q=example&qt=defType=dismax&qf=title^20.0+content^0.3 '
+
+
+
+curl 'http://localhost:8983/solr/rpm_news/query' -d '{ "query" : "*", "filter": "published_at:[2013-07-17T00:00:00Z TO NOW]" }'
+curl 'http://localhost:8983/solr/rpm_news/query' -d '{ "query" : "*", "filter": "published_at:[2017-07-17T00:00:00Z TO NOW]" }'
+
+&fq=published_date:[2013-07-17T00:00:00Z TO NOW]
+
+
+-------------------------------------------------------------------------------------------
+--
+-- Create schema
+--
+-------------------------------------------------------------------------------------------
+
+--
+-- title
+--
+curl http://localhost:8983/solr/rpm_news/schema -X POST -H 'Content-type:application/json' --data-binary '{
+    "add-field" : {
+        "name":"title",
+        "type":"text_en",
+        "multiValued":false,
+        "stored":true,
+        "indexed":true
+    }
+}'
+
+
+--
+-- URL
+--
+curl http://localhost:8983/solr/rpm_news/schema -X POST -H 'Content-type:application/json' --data-binary '{
+    "add-field" : {
+        "name":"url",
+        "type":"string",
+        "multiValued":false,
+        "stored":true,
+        "required":true
+    }
+}'
+
+--
+-- Content
+--
+curl http://localhost:8983/solr/rpm_news/schema -X POST -H 'Content-type:application/json' --data-binary '{
+    "add-field" : {
+        "name":"content",
+        "type":"text_en",
+        "multiValued":false,
+        "stored":true,
+        "indexed":true
+    }
+}'
+
+
+--
+-- Date (published_at)
+--
+curl http://localhost:8983/solr/rpm_news/schema -X POST -H 'Content-type:application/json' --data-binary '{
+    "add-field" : {
+        "name":"published_at",
+        "type":"pdate",
+        "multiValued":false,
+        "stored":true,
+        "indexed":true,
+        "required":true
+    }
+}'
+
+
+--
+-- Integer (source)
+--
+curl http://localhost:8983/solr/rpm_news/schema -X POST -H 'Content-type:application/json' --data-binary '{
+    "add-field" : {
+        "name":"source",
+        "type":"pint",
+        "multiValued":false,
+        "stored":true,
+        "indexed":true,
+        "required":true
+    }
+}'
+
+
+--
+-- Integer (category)
+--
+curl http://localhost:8983/solr/rpm_news/schema -X POST -H 'Content-type:application/json' --data-binary '{
+    "add-field" : {
+        "name":"category",
+        "type":"pint",
+        "multiValued":true,
+        "stored":true,
+        "indexed":true,
+        "required":true,
+        "default":"0"
+    }
+}'
+
+

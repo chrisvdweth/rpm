@@ -1,0 +1,8 @@
+#!/bin/bash
+
+while true
+do
+	node /home/vdw/dev/nodejs-server/rpm/public.js
+done
+
+

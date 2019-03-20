@@ -1,0 +1,20 @@
+#
+# Python stuff
+#
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+#
+# Node.js stuff
+#
+rpm-api-server/rpm-api-server-nodejs/node_modules/
+
+#
+# All kinds of log files
+#
+*.log
+
+# C extensions
+*.so
