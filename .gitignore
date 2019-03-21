@@ -9,7 +9,7 @@ __pycache__/
 #
 # Node.js stuff
 #
-rpm-api-server/rpm-api-server-nodejs/node_modules/
+server/rpm-api-server-nodejs/node_modules/
 
 #
 # All kinds of log files
@@ -18,3 +18,16 @@ rpm-api-server/rpm-api-server-nodejs/node_modules/
 
 # C extensions
 *.so
+
+#
+# Config files for dev environment
+#
+/core/scripts/cron/config.yaml
+
+
+#
+# Miscellaneous 
+#
+.idea
+
+
